@@ -39,3 +39,32 @@ def get_face_mask(image, landmarks):
         cv2.fillConvexPoly(im, points, color=1)
     im = np.array([im, im, im]).transpose((1, 2, 0))
     return im
+
+
+def point_in_triangle(p, triangle):
+    # Check if the point `p` is inside the triangle defined by its vertices `triangle`.
+    v0, v1, v2 = triangle
+    d00 = np.dot(v0 - v1, v0 - v1)
+    d01 = np.dot(v0 - v1, v0 - v2)
+    d11 = np.dot(v0 - v2, v0 - v2)
+    d20 = np.dot(p - v1, v0 - v1)
+    d21 = np.dot(p - v1, v0 - v2)
+    inv_denom = 1 / (d00 * d11 - d01 * d01)
+    u = (d11 * d20 - d01 * d21) * inv_denom
+    v = (d00 * d21 - d01 * d20) * inv_denom
+    return u >= 0 and v >= 0 and u + v <= 1
+
+
+def barycentric_coordinates(p, triangle):
+    # Compute the barycentric coordinates of the point `p` with respect to the triangle `triangle`.
+    v0, v1, v2 = triangle
+    d00 = np.dot(v0 - v1, v0 - v1)
+    d01 = np.dot(v0 - v1, v0 - v2)
+    d11 = np.dot(v0 - v2, v0 - v2)
+    d20 = np.dot(p - v1, v0 - v1)
+    d21 = np.dot(p - v1, v0 - v2)
+    inv_denom = 1 / (d00 * d11 - d01 * d01)
+    u = (d11 * d20 - d01 * d21) * inv_denom
+    v = (d00 * d21 - d01 * d20) * inv_denom
+    w = 1 - u - v
+    return u, v, w

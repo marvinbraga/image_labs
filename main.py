@@ -1,10 +1,10 @@
 import cv2
 
-from modules.loader import DefaultImageLoader
-from modules.landmark import DlibLandmarkFinder
-from modules.transformer import AffineImageTransformer
-from modules.colour import DefaultColorCorrector
 from modules.animator import ImageMorphingAnimator
+from modules.colour import DefaultColorCorrector
+from modules.landmark import DlibLandmarkFinder
+from modules.loader import DefaultImageLoader
+from modules.transformer import AffineImageTransformer
 
 if __name__ == '__main__':
     # Cria instâncias dos objetos necessários
