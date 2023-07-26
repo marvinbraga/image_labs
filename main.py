@@ -27,7 +27,7 @@ if __name__ == '__main__':
     landmarks2 = landmark_finder.find_landmarks(image2)
 
     # Cria uma instância de ImageMorphingAnimator
-    animator = ImageMorphingAnimator(image_transformer)
+    animator = ImageMorphingAnimator(image_transformer, num_frames=60)
 
     # Usa o ImageMorphingAnimator para transformar a imagem morphed_image em um vídeo
     animator.animate(image1, image2, landmarks1, landmarks2, 'outputs/output.mp4')

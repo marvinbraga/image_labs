@@ -26,11 +26,12 @@ class ImageMorphingAnimator:
 
         # Save frames to video.
         height, width, _ = morph_frames[0].shape
-        # video_writer = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*'mp4v'), 20, (width, height))
-        video_writer = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*'XVID'), 20, (width, height))
+        codecs = ["H264", "mp4v", "XVID"]
+        codec = codecs[1]
+        video_writer = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*codec), 20, (width, height), isColor=True)
 
         for frame in morph_frames:
-            video_writer.write(frame)
+            video_writer.write(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         video_writer.release()
 
     def _morph_triangle(self, image1, image2, landmarks1, landmarks2, morphed_image, triangle, t):
@@ -52,12 +53,12 @@ class ImageMorphingAnimator:
         # Form the intermediate image for this triangle.
         warped_image = (1.0 - t) * im1_warped + t * im2_warped
 
-        # Create a mask for this triangle.
-        mask = np.zeros_like(image1, dtype=bool)
-        tr_x, tr_y = np.ravel(tr[:, 0]), np.ravel(tr[:, 1])
-        rr, cc = polygon(tr_y, tr_x)  # Troque o tr[:, 1] por tr_y e tr[:, 0] por tr_x
-        mask[rr, cc, :] = True
+        # Create a mask for this triangle using OpenCV fillPoly.
+        mask = np.zeros_like(image1, dtype=np.uint8)
+        pts = np.array(tr, np.int32)
+        pts = pts.reshape((-1, 1, 2))
+        cv2.fillPoly(mask, [pts], (1, 1, 1))
 
         # Apply the mask to the morphed image for this triangle.
-        morphed_image[mask] = warped_image[mask]
+        morphed_image = (1.0 - mask) * morphed_image + mask * warped_image
         return self
